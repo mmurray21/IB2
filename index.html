@@ -99,7 +99,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        /* Setup Screen */
         .setup-section {
             background: #f8f9fa;
             padding: 25px;
@@ -183,7 +182,6 @@
             color: white;
         }
         
-        /* Story Submission */
         .story-form {
             background: white;
             border: 2px dashed #f093fb;
@@ -232,7 +230,6 @@
             color: #0984e3;
         }
         
-        /* Game Screen */
         .game-controls {
             display: flex;
             justify-content: space-between;
@@ -331,7 +328,6 @@
             color: #2c3e50;
         }
         
-        /* Results Screen */
         .results-grid {
             display: grid;
             gap: 20px;
@@ -378,10 +374,6 @@
         .story-author {
             font-weight: 600;
             color: #667eea;
-        }
-        
-        .hidden {
-            display: none;
         }
         
         .admin-section {
@@ -484,7 +476,6 @@
                 <button class="nav-btn" onclick="showScreen('results')">Results</button>
             </div>
 
-            <!-- Setup Screen -->
             <div id="setup" class="screen active">
                 <div class="setup-section">
                     <h3>🎯 Game Setup</h3>
@@ -525,7 +516,6 @@
                 </div>
             </div>
 
-            <!-- Story Submission Screen -->
             <div id="submit" class="screen">
                 <div class="story-form">
                     <h3>✨ Share Your Personal Story</h3>
@@ -601,7 +591,6 @@
                 </div>
             </div>
 
-            <!-- Game Screen -->
             <div id="game" class="screen">
                 <div class="game-controls">
                     <div class="story-counter" id="storyCounter">Story 1 of 0</div>
@@ -614,7 +603,6 @@
                 </div>
             </div>
 
-            <!-- Results Screen -->
             <div id="results" class="screen">
                 <div style="text-align: center; margin-bottom: 30px;">
                     <h2 style="color: #2c3e50; margin-bottom: 20px;">🏆 Game Results</h2>
@@ -632,7 +620,6 @@
     </div>
 
     <script>
-        // Game State
         let gameState = {
             teams: [],
             stories: [],
@@ -643,7 +630,6 @@
             selectedParticipant: null
         };
 
-        // Initialize team setup
         function updateTeamSetup() {
             const numTeams = parseInt(document.getElementById('numTeams').value);
             const teamSetup = document.getElementById('teamSetup');
@@ -652,21 +638,17 @@
             for (let i = 1; i <= numTeams; i++) {
                 const teamDiv = document.createElement('div');
                 teamDiv.className = 'team-input';
-                teamDiv.innerHTML = `
-                    <label>Team ${i}:</label>
-                    <input type="text" id="team${i}" placeholder="Team ${i} Name" value="Team ${i}">
-                `;
+                teamDiv.innerHTML = '<label>Team ' + i + ':</label><input type="text" id="team' + i + '" placeholder="Team ' + i + ' Name" value="Team ' + i + '">';
                 teamSetup.appendChild(teamDiv);
             }
         }
 
-        // Initialize game
         function initializeGame() {
             const numTeams = parseInt(document.getElementById('numTeams').value);
             gameState.teams = [];
             
             for (let i = 1; i <= numTeams; i++) {
-                const teamName = document.getElementById(`team${i}`).value || `Team ${i}`;
+                const teamName = document.getElementById('team' + i).value || 'Team ' + i;
                 gameState.teams.push({
                     name: teamName,
                     score: 0
@@ -674,26 +656,21 @@
             }
             
             updateGameStatus();
-            alert(`Game initialized with ${numTeams} teams!`);
+            alert('Game initialized with ' + numTeams + ' teams!');
         }
 
-        // Show screen
         function showScreen(screenName) {
-            // Hide all screens
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
             });
             
-            // Show selected screen
             document.getElementById(screenName).classList.add('active');
             
-            // Update nav buttons
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             event.target.classList.add('active');
             
-            // Update content based on screen
             if (screenName === 'game') {
                 updateGameDisplay();
             } else if (screenName === 'results') {
@@ -701,7 +678,6 @@
             }
         }
 
-        // Submit story
         function submitStory() {
             const author = document.getElementById('authorName').value.trim();
             const story = document.getElementById('storyText').value.trim();
@@ -717,7 +693,6 @@
                 revealed: false
             });
             
-            // Clear form
             document.getElementById('authorName').value = '';
             document.getElementById('storyText').value = '';
             
@@ -726,7 +701,6 @@
             alert('Story submitted successfully!');
         }
 
-        // Add sample stories for demo
         function addSampleStories() {
             const sampleStories = [
                 { author: "Sarah", text: "I once accidentally ordered 50 pounds of flour instead of 5 pounds online and ended up baking bread for the entire neighborhood for a month. Now they call me the 'Bread Lady' and still ask for my sourdough recipe!" },
@@ -749,7 +723,6 @@
             alert('Sample stories added for demo!');
         }
 
-        // Clear all stories
         function clearAllStories() {
             if (confirm('Are you sure you want to clear all stories?')) {
                 gameState.stories = [];
@@ -758,16 +731,14 @@
             }
         }
 
-        // Update game status
         function updateGameStatus() {
             document.getElementById('storyCount').textContent = gameState.stories.length;
             document.getElementById('teamStatus').textContent = gameState.teams.length > 0 ? 
-                `${gameState.teams.length} teams set up` : 'Not set up';
+                gameState.teams.length + ' teams set up' : 'Not set up';
             document.getElementById('gameState').textContent = gameState.gameStarted ? 
                 (gameState.gameFinished ? 'Finished' : 'In Progress') : 'Setup';
         }
 
-        // Update stories list
         function updateStoriesList() {
             const storiesList = document.getElementById('storiesList');
             if (gameState.stories.length === 0) {
@@ -775,15 +746,14 @@
                 return;
             }
             
-            storiesList.innerHTML = gameState.stories.map((story, index) => `
-                <div class="story-item">
-                    <strong>${story.author}</strong><br>
-                    <em>"${story.text.substring(0, 80)}${story.text.length > 80 ? '...' : ''}"</em>
-                </div>
-            `).join('');
+            let html = '';
+            gameState.stories.forEach((story, index) => {
+                html += '<div class="story-item"><strong>' + story.author + '</strong><br><em>"' + 
+                       story.text.substring(0, 80) + (story.text.length > 80 ? '...' : '') + '"</em></div>';
+            });
+            storiesList.innerHTML = html;
         }
 
-        // Update game display
         function updateGameDisplay() {
             const gameContent = document.getElementById('gameContent');
             
@@ -807,197 +777,15 @@
             const currentStory = gameState.stories[gameState.currentStoryIndex];
             const currentTeam = gameState.teams[gameState.currentTeamIndex];
             
-            // Update counter and current team
             document.getElementById('storyCounter').textContent = 
-                `Story ${gameState.currentStoryIndex + 1} of ${gameState.stories.length}`;
-            document.getElementById('currentTeamDisplay').textContent = `${currentTeam.name}'s Turn`;
+                'Story ' + (gameState.currentStoryIndex + 1) + ' of ' + gameState.stories.length;
+            document.getElementById('currentTeamDisplay').textContent = currentTeam.name + "'s Turn";
             
-            // Create participants list (all story authors)
             const participants = [...new Set(gameState.stories.map(s => s.author))];
             
-            gameContent.innerHTML = `
-                <div class="story-card">
-                    <h3>📖 Mystery Story</h3>
-                    <div class="story-text">${currentStory.text}</div>
-                    
-                    <div class="guessing-section">
-                        <div>
-                            <h4 style="margin-bottom: 20px; color: #2c3e50;">🎯 Make Your Guess</h4>
-                            <div style="margin-bottom: 20px;">
-                                <div style="font-size: 18px; font-weight: 600; color: #667eea;">Selected: <span id="selectedParticipant">None</span></div>
-                            </div>
-                            <button class="btn btn-success" onclick="submitGuess()" id="submitGuessBtn" disabled>Submit Guess</button>
-                            <div style="margin-top: 15px;">
-                                <button class="btn btn-primary" onclick="revealAnswer()">Reveal Answer</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        // Select participant
-        function selectParticipant(participant) {
-            gameState.selectedParticipant = participant;
-            
-            // Update visual selection
-            document.querySelectorAll('.participant-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            event.target.classList.add('selected');
-            
-            // Update display
-            document.getElementById('selectedParticipant').textContent = participant;
-            document.getElementById('submitGuessBtn').disabled = false;
-        }
-
-        // Submit guess
-        function submitGuess() {
-            if (!gameState.selectedParticipant) {
-                alert('Please select a participant first!');
-                return;
-            }
-            
-            const currentStory = gameState.stories[gameState.currentStoryIndex];
-            const currentTeam = gameState.teams[gameState.currentTeamIndex];
-            const isCorrect = gameState.selectedParticipant === currentStory.author;
-            
-            // Update score
-            if (isCorrect) {
-                currentTeam.score += 3;
-                alert(`🎉 Correct! ${currentTeam.name} earns 3 points!`);
-            } else {
-                alert(`❌ Incorrect! The correct answer was ${currentStory.author}`);
-            }
-            
-            // Show correct answer visually
-            revealAnswer();
-        }
-
-        // Reveal answer
-        function revealAnswer() {
-            const currentStory = gameState.stories[gameState.currentStoryIndex];
-            
-            // Update participant buttons to show correct/incorrect
-            document.querySelectorAll('.participant-btn').forEach(btn => {
-                if (btn.textContent === currentStory.author) {
-                    btn.classList.add('correct');
-                } else if (btn.classList.contains('selected')) {
-                    btn.classList.add('incorrect');
-                }
-                btn.disabled = true;
+            let participantsHtml = '';
+            participants.forEach(participant => {
+                participantsHtml += '<button class="participant-btn" onclick="selectParticipant(\'' + participant + '\')">' + participant + '</button>';
             });
             
-            // Show next story button
-            document.getElementById('nextStoryBtn').style.display = 'block';
-            document.getElementById('submitGuessBtn').disabled = true;
-            
-            // Update story as revealed
-            gameState.stories[gameState.currentStoryIndex].revealed = true;
-        }
-
-        // Next story
-        function nextStory() {
-            // Move to next team
-            gameState.currentTeamIndex = (gameState.currentTeamIndex + 1) % gameState.teams.length;
-            
-            // If we've cycled through all teams, move to next story
-            if (gameState.currentTeamIndex === 0) {
-                gameState.currentStoryIndex++;
-            }
-            
-            // Reset selection
-            gameState.selectedParticipant = null;
-            
-            // Hide next button
-            document.getElementById('nextStoryBtn').style.display = 'none';
-            
-            // Update display
-            updateGameDisplay();
-        }
-
-        // Update results display
-        function updateResultsDisplay() {
-            const finalResults = document.getElementById('finalResults');
-            
-            if (!gameState.gameFinished) {
-                finalResults.innerHTML = '<p style="text-align: center; color: #636e72;">Complete the game to see results!</p>';
-                return;
-            }
-            
-            // Sort teams by score
-            const sortedTeams = [...gameState.teams].sort((a, b) => b.score - a.score);
-            const winner = sortedTeams[0];
-            
-            // Create results display
-            let resultsHTML = `
-                <div class="results-grid">
-                    ${sortedTeams.map((team, index) => `
-                        <div class="team-result ${index === 0 ? 'winner' : ''}">
-                            <h3>${index === 0 ? '🏆 ' : ''}${team.name}</h3>
-                            <div class="team-score">${team.score}</div>
-                            <div>${index === 0 ? 'WINNER!' : `${index + 1}${getOrdinalSuffix(index + 1)} Place`}</div>
-                        </div>
-                    `).join('')}
-                </div>
-                
-                <div style="margin-top: 40px;">
-                    <h3 style="text-align: center; margin-bottom: 20px; color: #2c3e50;">📚 Story Reveals</h3>
-                    ${gameState.stories.map(story => `
-                        <div class="story-reveal">
-                            <div class="story-reveal-text">"${story.text}"</div>
-                            <div class="story-author">— ${story.author}</div>
-                        </div>
-                    `).join('')}
-                </div>
-            `;
-            
-            finalResults.innerHTML = resultsHTML;
-        }
-
-        // Get ordinal suffix
-        function getOrdinalSuffix(num) {
-            const suffixes = ['th', 'st', 'nd', 'rd'];
-            const val = num % 100;
-            return suffixes[(val - 20) % 10] || suffixes[val] || suffixes[0];
-        }
-
-        // Reset game
-        function resetGame() {
-            if (confirm('Are you sure you want to start a new game? This will clear all current progress.')) {
-                gameState = {
-                    teams: [],
-                    stories: [],
-                    currentStoryIndex: 0,
-                    currentTeamIndex: 0,
-                    gameStarted: false,
-                    gameFinished: false,
-                    selectedParticipant: null
-                };
-                
-                updateGameStatus();
-                updateStoriesList();
-                showScreen('setup');
-                
-                // Reset team setup
-                updateTeamSetup();
-            }
-        }
-
-        // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            updateTeamSetup();
-            updateGameStatus();
-        });
-    </script>
-</body>
-</html>margin-bottom: 15px; color: #2c3e50;">👥 Who wrote this story?</h4>
-                            <div class="participants-grid">
-                                ${participants.map(participant => `
-                                    <button class="participant-btn" onclick="selectParticipant('${participant}')">${participant}</button>
-                                `).join('')}
-                            </div>
-                        </div>
-                        
-                        <div style="text-align: center;">
-                            <h4 style="
+            gameContent.innerHTML = '<div class="story-card"><h3>📖 Mystery Story
