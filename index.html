@@ -788,4 +788,153 @@
                 participantsHtml += '<button class="participant-btn" onclick="selectParticipant(\'' + participant + '\')">' + participant + '</button>';
             });
             
-            gameContent.innerHTML = '<div class="story-card"><h3>📖 Mystery Story
+            gameContent.innerHTML = '<div class="story-card">' +
+                '<h3>📖 Mystery Story</h3>' +
+                '<div class="story-text">' + currentStory.text + '</div>' +
+                '<div class="guessing-section">' +
+                '<div>' +
+                '<h4 style="margin-bottom: 15px; color: #2c3e50;">👥 Who wrote this story?</h4>' +
+                '<div class="participants-grid">' + participantsHtml + '</div>' +
+                '</div>' +
+                '<div style="text-align: center;">' +
+                '<h4 style="margin-bottom: 20px; color: #2c3e50;">🎯 Make Your Guess</h4>' +
+                '<div style="margin-bottom: 20px;">' +
+                '<div style="font-size: 18px; font-weight: 600; color: #667eea;">Selected: <span id="selectedParticipant">None</span></div>' +
+                '</div>' +
+                '<button class="btn btn-success" onclick="submitGuess()" id="submitGuessBtn" disabled>Submit Guess</button>' +
+                '<div style="margin-top: 15px;">' +
+                '<button class="btn btn-primary" onclick="revealAnswer()">Reveal Answer</button>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>';
+        }
+
+        function selectParticipant(participant) {
+            gameState.selectedParticipant = participant;
+            
+            document.querySelectorAll('.participant-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+            
+            document.getElementById('selectedParticipant').textContent = participant;
+            document.getElementById('submitGuessBtn').disabled = false;
+        }
+
+        function submitGuess() {
+            if (!gameState.selectedParticipant) {
+                alert('Please select a participant first!');
+                return;
+            }
+            
+            const currentStory = gameState.stories[gameState.currentStoryIndex];
+            const currentTeam = gameState.teams[gameState.currentTeamIndex];
+            const isCorrect = gameState.selectedParticipant === currentStory.author;
+            
+            if (isCorrect) {
+                currentTeam.score += 3;
+                alert('🎉 Correct! ' + currentTeam.name + ' earns 3 points!');
+            } else {
+                alert('❌ Incorrect! The correct answer was ' + currentStory.author);
+            }
+            
+            revealAnswer();
+        }
+
+        function revealAnswer() {
+            const currentStory = gameState.stories[gameState.currentStoryIndex];
+            
+            document.querySelectorAll('.participant-btn').forEach(btn => {
+                if (btn.textContent === currentStory.author) {
+                    btn.classList.add('correct');
+                } else if (btn.classList.contains('selected')) {
+                    btn.classList.add('incorrect');
+                }
+                btn.disabled = true;
+            });
+            
+            document.getElementById('nextStoryBtn').style.display = 'block';
+            document.getElementById('submitGuessBtn').disabled = true;
+            
+            gameState.stories[gameState.currentStoryIndex].revealed = true;
+        }
+
+        function nextStory() {
+            gameState.currentTeamIndex = (gameState.currentTeamIndex + 1) % gameState.teams.length;
+            
+            if (gameState.currentTeamIndex === 0) {
+                gameState.currentStoryIndex++;
+            }
+            
+            gameState.selectedParticipant = null;
+            document.getElementById('nextStoryBtn').style.display = 'none';
+            updateGameDisplay();
+        }
+
+        function updateResultsDisplay() {
+            const finalResults = document.getElementById('finalResults');
+            
+            if (!gameState.gameFinished) {
+                finalResults.innerHTML = '<p style="text-align: center; color: #636e72;">Complete the game to see results!</p>';
+                return;
+            }
+            
+            const sortedTeams = [...gameState.teams].sort((a, b) => b.score - a.score);
+            
+            let resultsHTML = '<div class="results-grid">';
+            sortedTeams.forEach((team, index) => {
+                resultsHTML += '<div class="team-result ' + (index === 0 ? 'winner' : '') + '">' +
+                    '<h3>' + (index === 0 ? '🏆 ' : '') + team.name + '</h3>' +
+                    '<div class="team-score">' + team.score + '</div>' +
+                    '<div>' + (index === 0 ? 'WINNER!' : (index + 1) + getOrdinalSuffix(index + 1) + ' Place') + '</div>' +
+                    '</div>';
+            });
+            resultsHTML += '</div>';
+            
+            resultsHTML += '<div style="margin-top: 40px;">' +
+                '<h3 style="text-align: center; margin-bottom: 20px; color: #2c3e50;">📚 Story Reveals</h3>';
+            
+            gameState.stories.forEach(story => {
+                resultsHTML += '<div class="story-reveal">' +
+                    '<div class="story-reveal-text">"' + story.text + '"</div>' +
+                    '<div class="story-author">— ' + story.author + '</div>' +
+                    '</div>';
+            });
+            resultsHTML += '</div>';
+            
+            finalResults.innerHTML = resultsHTML;
+        }
+
+        function getOrdinalSuffix(num) {
+            const suffixes = ['th', 'st', 'nd', 'rd'];
+            const val = num % 100;
+            return suffixes[(val - 20) % 10] || suffixes[val] || suffixes[0];
+        }
+
+        function resetGame() {
+            if (confirm('Are you sure you want to start a new game? This will clear all current progress.')) {
+                gameState = {
+                    teams: [],
+                    stories: [],
+                    currentStoryIndex: 0,
+                    currentTeamIndex: 0,
+                    gameStarted: false,
+                    gameFinished: false,
+                    selectedParticipant: null
+                };
+                
+                updateGameStatus();
+                updateStoriesList();
+                showScreen('setup');
+                updateTeamSetup();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTeamSetup();
+            updateGameStatus();
+        });
+    </script>
+</body>
+</html>
